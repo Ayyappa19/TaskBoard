@@ -5,11 +5,13 @@ import BoardDetail from './pages/BoardDetail.jsx';
 
 function App() {
   return (
-    <Routes>
-      <Route path="/" element={<BoardView />} />
-      <Route path="/board/:boardId" element={<BoardDetail />} />
-      <Route path="*" element={<Navigate to="/" />} />
-    </Routes>
+    <div className="min-h-screen bg-gradient-to-br from-primary-light via-background-DEFAULT to-accent-DEFAULT font-display">
+      <Routes>
+        <Route path="/" element={<BoardView />} />
+        <Route path="/board/:boardId" element={<BoardDetail />} />
+        <Route path="*" element={<Navigate to="/" />} />
+      </Routes>
+    </div>
   );
 }
 
