@@ -10,7 +10,16 @@ const useStore = create(persist((set, get) => ({
   columns: {},
   cards: {},
   members: ["Alice", "Bob", "Charlie"],
-  currentUser: "Alice", // Example current user
+  currentUser: null, // null if not logged in
+
+  // Auth actions
+  login: (name) => set(state => {
+    if (!state.members.includes(name)) {
+      return { currentUser: name, members: [...state.members, name] };
+    }
+    return { currentUser: name };
+  }),
+  logout: () => set({ currentUser: null }),
 
   // Board actions
   addBoard: (name, description) => set(state => {
@@ -59,6 +68,20 @@ const useStore = create(persist((set, get) => ({
     const cards = { ...state.cards };
     delete cards[id];
     return { cards };
+  }),
+  moveCard: (cardId, destColumnId, destIndex) => set(state => {
+    // Get all cards in the destination column, sorted by their current order
+    let cardsArr = Object.values(state.cards).filter(c => c.columnId === destColumnId && c.id !== cardId);
+    // Insert the moved card at the new index
+    cardsArr.splice(destIndex, 0, state.cards[cardId]);
+    // Update columnId for the moved card
+    const newCards = { ...state.cards, [cardId]: { ...state.cards[cardId], columnId: destColumnId } };
+    // Reorder cards in the destination column
+    cardsArr.forEach((c, i) => {
+      newCards[c.id] = { ...newCards[c.id], order: i };
+    });
+    newCards[cardId] = { ...newCards[cardId], order: destIndex, columnId: destColumnId };
+    return { cards: newCards };
   }),
 
 }), { name: 'task-board-storage' }));
